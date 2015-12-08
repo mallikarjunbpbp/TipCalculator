@@ -10,6 +10,11 @@ import UIKit
 
 class TipDetailsTableViewController: UITableViewController {
 
+    var data = ["10","20", "25"]
+    
+    var checkedIndexPath = 0
+    var firstTime = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -18,6 +23,12 @@ class TipDetailsTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        let defaults = NSUserDefaults.standardUserDefaults()
+        checkedIndexPath = defaults.integerForKey("index")
+        let rowToSelect:NSIndexPath = NSIndexPath(forRow: checkedIndexPath, inSection: 0)
+        tableView.selectRowAtIndexPath(rowToSelect, animated: true, scrollPosition: UITableViewScrollPosition.None)
+        self.tableView(tableView, didSelectRowAtIndexPath: rowToSelect)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,25 +39,45 @@ class TipDetailsTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return 3
     }
 
-    /*
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("LabelCell2", forIndexPath: indexPath)
 
         // Configure the cell...
 
+        cell.textLabel?.text="\(data[indexPath.row])%"
         return cell
     }
-    */
+    
 
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if(firstTime){
+            let rowToSelect:NSIndexPath = NSIndexPath(forRow: checkedIndexPath, inSection: 0)
+            tableView.deselectRowAtIndexPath(rowToSelect, animated: true)
+            self.tableView(tableView, didDeselectRowAtIndexPath: rowToSelect)
+        }
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        cell?.accessoryType=UITableViewCellAccessoryType.Checkmark
+        let percent = NSString(string: (cell?.textLabel!.text)!).integerValue
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setInteger(percent, forKey: "tipPercent")
+        defaults.setInteger(indexPath.row, forKey: "index")
+        defaults.synchronize()
+        
+    }
+    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        cell?.accessoryType=UITableViewCellAccessoryType.None
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
