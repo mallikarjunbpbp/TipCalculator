@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         let defaults = NSUserDefaults.standardUserDefaults()
         let index = defaults.integerForKey("index")
         tipPercentageSegControl.selectedSegmentIndex=index
-        
+        self.textFieldChanged(index)
     }
 
     
